@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { AnimatePresence } from 'motion/react';
+import { AnimatePresence, motion } from 'motion/react';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import ShowroomView from './components/ShowroomView';
@@ -69,55 +69,90 @@ export default function App() {
       <main className="flex-grow w-full">
         <AnimatePresence mode="wait">
           {currentView === 'showroom' && (
-            <ShowroomView 
+            <motion.div 
               key="showroom"
-              vehicle={selectedVehicle}
-              allVehicles={vehicles}
-              onSelectVehicle={handleSelectVehicle}
-              onAddInquiry={handleAddInquiry}
-              setView={setCurrentView}
-            />
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <ShowroomView 
+                vehicle={selectedVehicle}
+                allVehicles={vehicles}
+                onSelectVehicle={handleSelectVehicle}
+                onAddInquiry={handleAddInquiry}
+                setView={setCurrentView}
+              />
+            </motion.div>
           )}
 
           {currentView === 'inventory' && (
-            <InventoryView 
+            <motion.div 
               key="inventory"
-              vehicles={vehicles}
-              onSelectVehicle={handleSelectVehicle}
-              setView={setCurrentView}
-            />
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <InventoryView 
+                vehicles={vehicles}
+                onSelectVehicle={handleSelectVehicle}
+                setView={setCurrentView}
+              />
+            </motion.div>
           )}
 
           {currentView === 'admin' && isAuthenticated && (
-            <AdminDashboardView 
+            <motion.div 
               key="admin"
-              vehicles={vehicles}
-              inquiries={inquiries}
-              serviceAppointments={serviceAppointments}
-              onDeleteVehicle={handleDeleteVehicle}
-              onChangeVehicleStatus={handleChangeVehicleStatus}
-              onSelectVehicle={handleSelectVehicle}
-              setView={setCurrentView}
-            />
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <AdminDashboardView 
+                vehicles={vehicles}
+                inquiries={inquiries}
+                serviceAppointments={serviceAppointments}
+                onDeleteVehicle={handleDeleteVehicle}
+                onChangeVehicleStatus={handleChangeVehicleStatus}
+                onSelectVehicle={handleSelectVehicle}
+                setView={setCurrentView}
+              />
+            </motion.div>
           )}
 
           {currentView === 'add-vehicle' && isAuthenticated && (
-            <AddVehicleView 
+            <motion.div 
               key="add-vehicle"
-              onAddVehicle={handleAddVehicle}
-              setView={setCurrentView}
-            />
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <AddVehicleView 
+                onAddVehicle={handleAddVehicle}
+                setView={setCurrentView}
+              />
+            </motion.div>
           )}
 
           {currentView === 'login' && !isAuthenticated && (
-            <LoginView
+            <motion.div 
               key="login"
-              onLogin={() => {
-                setIsAuthenticated(true);
-                setCurrentView('admin');
-              }}
-              setView={setCurrentView}
-            />
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <LoginView
+                onLogin={() => {
+                  setIsAuthenticated(true);
+                  setCurrentView('admin');
+                }}
+                setView={setCurrentView}
+              />
+            </motion.div>
           )}
         </AnimatePresence>
       </main>

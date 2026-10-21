@@ -20,7 +20,8 @@ import {
   Calculator,
   ChevronRight,
   Search,
-  Filter
+  Filter,
+  Clock
 } from 'lucide-react';
 import { Vehicle, Inquiry } from '../types';
 
