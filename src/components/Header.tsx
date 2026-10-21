@@ -24,7 +24,7 @@ export default function Header({ currentView, setView, isAuthenticated, setIsAut
           className="flex items-center gap-3 font-display text-base md:text-xl font-black text-on-surface tracking-tighter uppercase focus:outline-none cursor-pointer group"
         >
           <img 
-            src="/carseller-logo.svg" 
+            src="/carseller-logo.png" 
             alt="Car Seller Logo" 
             className="w-10 h-10 md:w-11 md:h-11 rounded-full object-cover border border-secondary/40 shadow-sm group-hover:scale-105 transition-transform" 
           />

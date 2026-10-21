@@ -10,7 +10,7 @@ export default function Footer({ setView }: FooterProps) {
       <div className="flex flex-col items-center md:items-start gap-3">
         <div className="flex items-center gap-3">
           <img 
-            src="/carseller-logo.svg" 
+            src="/carseller-logo.png" 
             alt="Car Seller" 
             className="w-9 h-9 rounded-full object-cover border border-secondary/40" 
           />
