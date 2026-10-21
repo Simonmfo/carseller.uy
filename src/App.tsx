@@ -1,70 +1,138 @@
-import { useState, useEffect } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
-import Header from './components/Header';
-import Footer from './components/Footer';
-import ShowroomView from './components/ShowroomView';
-import InventoryView from './components/InventoryView';
-import AdminDashboardView from './components/AdminDashboardView';
-import AddVehicleView from './components/AddVehicleView';
-import LoginView from './components/LoginView';
+import { useState, useEffect } from "react";
+import { AnimatePresence, motion } from "motion/react";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
+import ShowroomView from "./components/ShowroomView";
+import InventoryView from "./components/InventoryView";
+import AdminDashboardView from "./components/AdminDashboardView";
+import AddVehicleView from "./components/AddVehicleView";
+import LoginView from "./components/LoginView";
 
-import { Vehicle, Inquiry, ServiceAppointment } from './types';
-import { INITIAL_VEHICLES, DEFAULT_INQUIRIES, UPCOMING_SERVICES } from './data';
-import { supabase } from './lib/supabase';
+import { Vehicle, Inquiry, ServiceAppointment } from "./types";
+import { INITIAL_VEHICLES, DEFAULT_INQUIRIES, UPCOMING_SERVICES } from "./data";
+import { supabase } from "./lib/supabase";
+import { parsePath, buildPath, ViewType } from "./lib/router";
 
 export default function App() {
+  // Parse initial route from browser URL
+  const initialRoute = parsePath(window.location.pathname);
+
   // Global State Engine
   const [vehicles, setVehicles] = useState<Vehicle[]>(INITIAL_VEHICLES);
-  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle>(INITIAL_VEHICLES[0]);
+  const [selectedVehicle, setSelectedVehicle] = useState<Vehicle>(() => {
+    if (initialRoute.vehicleId) {
+      const found = INITIAL_VEHICLES.find(v => v.id === initialRoute.vehicleId);
+      if (found) return found;
+    }
+    return INITIAL_VEHICLES[0];
+  });
+  const [targetVehicleId, setTargetVehicleId] = useState<string | undefined>(initialRoute.vehicleId);
+
   const [inquiries, setInquiries] = useState<Inquiry[]>(DEFAULT_INQUIRIES);
   const [serviceAppointments, setServiceAppointments] = useState<ServiceAppointment[]>(UPCOMING_SERVICES);
   
   // Navigation Routing States
-  const [currentView, setCurrentView] = useState<'showroom' | 'inventory' | 'admin' | 'add-vehicle' | 'login'>('showroom');
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [currentView, setCurrentView] = useState<ViewType>(initialRoute.view);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    return localStorage.getItem("carseller_auth") === "true";
+  });
+
+  // Handle Auth changes with persistent storage
+  const handleSetAuthenticated = (val: boolean) => {
+    setIsAuthenticated(val);
+    if (val) {
+      localStorage.setItem("carseller_auth", "true");
+    } else {
+      localStorage.removeItem("carseller_auth");
+    }
+  };
+
+  // URL Slug Navigation Helper
+  const navigateTo = (view: ViewType, vehicleId?: string) => {
+    setCurrentView(view);
+    const vId = vehicleId ?? (view === "showroom" ? selectedVehicle?.id : undefined);
+    const newPath = buildPath(view, vId);
+    if (window.location.pathname !== newPath) {
+      window.history.pushState({ view, vehicleId: vId }, "", newPath);
+    }
+  };
+
+  // Listen to browser Back/Forward (popstate)
+  useEffect(() => {
+    const handlePopState = () => {
+      const route = parsePath(window.location.pathname);
+      setCurrentView(route.view);
+      if (route.vehicleId) {
+        setTargetVehicleId(route.vehicleId);
+        const match = vehicles.find(v => v.id === route.vehicleId);
+        if (match) setSelectedVehicle(match);
+      }
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [vehicles]);
+
+  // Sync targetVehicleId when vehicles data changes
+  useEffect(() => {
+    if (targetVehicleId && vehicles.length > 0) {
+      const match = vehicles.find(v => v.id === targetVehicleId);
+      if (match) {
+        setSelectedVehicle(match);
+      }
+    }
+  }, [targetVehicleId, vehicles]);
 
   // Sync state with Supabase cloud database
   useEffect(() => {
     async function fetchSupabaseData() {
       try {
         const { data: dbVehicles, error: vError } = await supabase
-          .from('vehicles')
-          .select('*')
-          .order('created_at', { ascending: false });
+          .from("vehicles")
+          .select("*")
+          .order("created_at", { ascending: false });
 
         if (!vError && dbVehicles && dbVehicles.length > 0) {
           setVehicles(dbVehicles as Vehicle[]);
-          setSelectedVehicle(dbVehicles[0] as Vehicle);
+          if (targetVehicleId) {
+            const match = dbVehicles.find((v: any) => v.id === targetVehicleId);
+            if (match) setSelectedVehicle(match as Vehicle);
+          }
         }
 
         const { data: dbInquiries, error: iError } = await supabase
-          .from('inquiries')
-          .select('*')
-          .order('created_at', { ascending: false });
+          .from("inquiries")
+          .select("*")
+          .order("created_at", { ascending: false });
 
         if (!iError && dbInquiries && dbInquiries.length > 0) {
           setInquiries(dbInquiries as Inquiry[]);
         }
       } catch (err) {
-        console.warn('Supabase initial fetch fallback to local data:', err);
+        console.warn("Supabase initial fetch fallback to local data:", err);
       }
     }
 
     fetchSupabaseData();
-  }, []);
+  }, [targetVehicleId]);
 
   // Operations handlers
   const handleSelectVehicle = (vehicle: Vehicle) => {
     setSelectedVehicle(vehicle);
+    setTargetVehicleId(vehicle.id);
+    navigateTo("showroom", vehicle.id);
+  };
+
+  const handleSetView = (view: ViewType) => {
+    navigateTo(view);
   };
 
   const handleAddVehicle = async (newVehicle: Vehicle) => {
     setVehicles(prev => [newVehicle, ...prev]);
     setSelectedVehicle(newVehicle);
     try {
-      await supabase.from('vehicles').insert([newVehicle]);
+      await supabase.from("vehicles").insert([newVehicle]);
     } catch (e) {
-      console.error('Error inserting vehicle into Supabase:', e);
+      console.error("Error inserting vehicle into Supabase:", e);
     }
   };
 
@@ -77,30 +145,30 @@ export default function App() {
       return updated;
     });
     try {
-      await supabase.from('vehicles').delete().eq('id', id);
+      await supabase.from("vehicles").delete().eq("id", id);
     } catch (e) {
-      console.error('Error deleting vehicle from Supabase:', e);
+      console.error("Error deleting vehicle from Supabase:", e);
     }
   };
 
-  const handleChangeVehicleStatus = async (id: string, status: Vehicle['status']) => {
+  const handleChangeVehicleStatus = async (id: string, status: Vehicle["status"]) => {
     setVehicles(prev => prev.map(v => v.id === id ? { ...v, status } : v));
     if (selectedVehicle.id === id) {
       setSelectedVehicle(prev => ({ ...prev, status }));
     }
     try {
-      await supabase.from('vehicles').update({ status }).eq('id', id);
+      await supabase.from("vehicles").update({ status }).eq("id", id);
     } catch (e) {
-      console.error('Error updating vehicle status in Supabase:', e);
+      console.error("Error updating vehicle status in Supabase:", e);
     }
   };
 
   const handleAddInquiry = async (newInquiry: Inquiry) => {
     setInquiries(prev => [newInquiry, ...prev]);
     try {
-      await supabase.from('inquiries').insert([newInquiry]);
+      await supabase.from("inquiries").insert([newInquiry]);
     } catch (e) {
-      console.error('Error saving inquiry into Supabase:', e);
+      console.error("Error saving inquiry into Supabase:", e);
     }
   };
 
@@ -110,16 +178,16 @@ export default function App() {
       {/* Universal Top Header */}
       <Header 
         currentView={currentView} 
-        setView={setCurrentView} 
+        setView={handleSetView} 
         isAuthenticated={isAuthenticated}
-        setIsAuthenticated={setIsAuthenticated}
+        setIsAuthenticated={handleSetAuthenticated}
         totalVehicles={vehicles.length}
       />
 
       {/* Interactive Main Workspace Content Area */}
       <main className="flex-grow w-full">
         <AnimatePresence mode="wait">
-          {currentView === 'showroom' && (
+          {currentView === "showroom" && (
             <motion.div 
               key="showroom"
               initial={{ opacity: 0 }}
@@ -132,12 +200,12 @@ export default function App() {
                 allVehicles={vehicles}
                 onSelectVehicle={handleSelectVehicle}
                 onAddInquiry={handleAddInquiry}
-                setView={setCurrentView}
+                setView={handleSetView}
               />
             </motion.div>
           )}
 
-          {currentView === 'inventory' && (
+          {currentView === "inventory" && (
             <motion.div 
               key="inventory"
               initial={{ opacity: 0 }}
@@ -148,47 +216,83 @@ export default function App() {
               <InventoryView 
                 vehicles={vehicles}
                 onSelectVehicle={handleSelectVehicle}
-                setView={setCurrentView}
+                setView={handleSetView}
               />
             </motion.div>
           )}
 
-          {currentView === 'admin' && isAuthenticated && (
-            <motion.div 
-              key="admin"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <AdminDashboardView 
-                vehicles={vehicles}
-                inquiries={inquiries}
-                serviceAppointments={serviceAppointments}
-                onDeleteVehicle={handleDeleteVehicle}
-                onChangeVehicleStatus={handleChangeVehicleStatus}
-                onSelectVehicle={handleSelectVehicle}
-                setView={setCurrentView}
-              />
-            </motion.div>
+          {currentView === "admin" && (
+            isAuthenticated ? (
+              <motion.div 
+                key="admin"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <AdminDashboardView 
+                  vehicles={vehicles}
+                  inquiries={inquiries}
+                  serviceAppointments={serviceAppointments}
+                  onDeleteVehicle={handleDeleteVehicle}
+                  onChangeVehicleStatus={handleChangeVehicleStatus}
+                  onSelectVehicle={handleSelectVehicle}
+                  setView={handleSetView}
+                />
+              </motion.div>
+            ) : (
+              <motion.div 
+                key="login-redirect"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <LoginView
+                  onLogin={() => {
+                    handleSetAuthenticated(true);
+                    navigateTo("admin");
+                  }}
+                  setView={handleSetView}
+                />
+              </motion.div>
+            )
           )}
 
-          {currentView === 'add-vehicle' && isAuthenticated && (
-            <motion.div 
-              key="add-vehicle"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <AddVehicleView 
-                onAddVehicle={handleAddVehicle}
-                setView={setCurrentView}
-              />
-            </motion.div>
+          {currentView === "add-vehicle" && (
+            isAuthenticated ? (
+              <motion.div 
+                key="add-vehicle"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <AddVehicleView 
+                  onAddVehicle={handleAddVehicle}
+                  setView={handleSetView}
+                />
+              </motion.div>
+            ) : (
+              <motion.div 
+                key="login-redirect-add"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <LoginView
+                  onLogin={() => {
+                    handleSetAuthenticated(true);
+                    navigateTo("add-vehicle");
+                  }}
+                  setView={handleSetView}
+                />
+              </motion.div>
+            )
           )}
 
-          {currentView === 'login' && !isAuthenticated && (
+          {currentView === "login" && (
             <motion.div 
               key="login"
               initial={{ opacity: 0 }}
@@ -198,10 +302,10 @@ export default function App() {
             >
               <LoginView
                 onLogin={() => {
-                  setIsAuthenticated(true);
-                  setCurrentView('admin');
+                  handleSetAuthenticated(true);
+                  navigateTo("admin");
                 }}
-                setView={setCurrentView}
+                setView={handleSetView}
               />
             </motion.div>
           )}
@@ -209,7 +313,7 @@ export default function App() {
       </main>
 
       {/* Universal Footer */}
-      <Footer setView={setCurrentView} />
+      <Footer setView={handleSetView} />
 
     </div>
   );
