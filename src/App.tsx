@@ -154,8 +154,8 @@ export default function App() {
   const handleChangeVehicleStatus = async (id: string, status: Vehicle["status"]) => {
     setVehicles(prev => {
       const updated = prev.map(v => v.id === id ? { ...v, status } : v);
-      if (status === 'Sold' && selectedVehicle.id === id) {
-        const nextActive = updated.find(v => v.status !== 'Sold');
+      if (status === 'Hidden' && selectedVehicle.id === id) {
+        const nextActive = updated.find(v => v.status !== 'Hidden');
         if (nextActive) setSelectedVehicle(nextActive);
       }
       return updated;

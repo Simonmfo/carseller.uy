@@ -14,7 +14,7 @@ export interface Vehicle {
   fuelType: 'Petrol' | 'Electric' | 'Hybrid' | 'Diesel';
   mileage: number;
   color: string;
-  status: 'Active' | 'Sold' | 'Pending' | 'Reserved';
+  status: 'Active' | 'Reserved' | 'Sold' | 'Hidden';
   daysOnLot: number;
   stockId: string;
   vin: string;

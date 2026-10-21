@@ -80,7 +80,7 @@ export default function ShowroomView({
   // Filtered vehicles for the showroom grid
   const displayedVehicles = useMemo(() => {
     return allVehicles.filter(v => {
-      if (v.status === 'Sold') return false;
+      if (v.status === 'Hidden') return false;
       const matchBrand = selectedBrand === 'Todas' || v.brand === selectedBrand;
       const matchCat = selectedCategory === 'Todas' || v.category.toLowerCase().includes(selectedCategory.toLowerCase());
       let matchPrice = true;
@@ -92,7 +92,7 @@ export default function ShowroomView({
   }, [allVehicles, selectedBrand, selectedCategory, selectedPriceMax]);
 
   const uniqueBrands = useMemo(() => {
-    const available = allVehicles.filter(v => v.status !== 'Sold');
+    const available = allVehicles.filter(v => v.status !== 'Hidden');
     return ['Todas', ...Array.from(new Set(available.map(v => v.brand)))];
   }, [allVehicles]);
 
@@ -297,9 +297,21 @@ export default function ShowroomView({
                 alt={`${vehicle.brand} ${vehicle.model}`}
                 className="w-full h-full object-cover transition-all duration-300"
               />
-              <span className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                {vehicle.status === 'Active' ? 'Disponible' : vehicle.status}
-              </span>
+              {vehicle.status === 'Sold' ? (
+                <span className="absolute top-3 left-3 bg-red-600 text-white text-xs font-black px-3.5 py-1 rounded-full uppercase tracking-wider shadow-lg flex items-center gap-1.5 border border-white/20 z-10">
+                  <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
+                  VENDIDO
+                </span>
+              ) : vehicle.status === 'Reserved' ? (
+                <span className="absolute top-3 left-3 bg-amber-500 text-slate-950 text-xs font-black px-3.5 py-1 rounded-full uppercase tracking-wider shadow-lg flex items-center gap-1.5 border border-white/20 z-10">
+                  <Clock className="w-3.5 h-3.5 text-slate-950" />
+                  RESERVADO
+                </span>
+              ) : (
+                <span className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider z-10">
+                  Disponible
+                </span>
+              )}
               <span className="absolute top-3 right-3 bg-brand-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
                 Año {vehicle.year}
               </span>

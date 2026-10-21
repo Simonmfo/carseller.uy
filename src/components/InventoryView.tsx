@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { 
+import { Clock, 
   SlidersHorizontal, 
   Search, 
   ArrowRight, 
@@ -34,8 +34,8 @@ export default function InventoryView({ vehicles, onSelectVehicle, setView }: In
 
   // Extract unique brands
   const brandsList = useMemo(() => {
-    const available = vehicles.filter(v => v.status !== 'Sold');
-    const brands = new Set(available.map(v => v.brand));
+    const visible = vehicles.filter(v => v.status !== 'Hidden');
+    const brands = new Set(visible.map(v => v.brand));
     return ['Todas', ...Array.from(brands)];
   }, [vehicles]);
 
@@ -56,8 +56,8 @@ export default function InventoryView({ vehicles, onSelectVehicle, setView }: In
   // Filter and Sort Vehicles
   const filteredVehicles = useMemo(() => {
     return vehicles.filter(v => {
-      // Exclude vehicles marked as Sold from the public catalog
-      if (v.status === 'Sold') return false;
+      // Exclude vehicles marked as Hidden/Disabled from the public catalog
+      if (v.status === 'Hidden') return false;
 
       const matchBrand = selectedBrand === 'Todas' || v.brand === selectedBrand;
       const matchCategory = selectedCategory === 'Todas' || v.category.toLowerCase().includes(selectedCategory.toLowerCase());
@@ -102,7 +102,7 @@ export default function InventoryView({ vehicles, onSelectVehicle, setView }: In
 
           <div className="flex items-center gap-3">
             <span className="text-xs text-slate-500 font-semibold bg-white px-3 py-1.5 rounded-lg border border-slate-200">
-              {filteredVehicles.length} de {vehicles.filter(v => v.status !== "Sold").length} unidades disponibles
+              {filteredVehicles.length} de {vehicles.filter(v => v.status !== "Hidden").length} unidades en catálogo
             </span>
 
             <button
@@ -300,14 +300,39 @@ export default function InventoryView({ vehicles, onSelectVehicle, setView }: In
                         <img
                           src={v.image}
                           alt={`${v.brand} ${v.model}`}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          className={`w-full h-full object-cover transition-transform duration-300 ${
+                            v.status === 'Sold' ? 'grayscale-[35%] group-hover:scale-100' : 'group-hover:scale-105'
+                          }`}
                         />
-                        <span className="absolute top-2.5 left-2.5 bg-slate-900/80 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase">
+                        <span className="absolute top-2.5 left-2.5 bg-slate-900/80 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase z-10">
                           Año {v.year}
                         </span>
-                        <span className="absolute top-2.5 right-2.5 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                          {v.mileage === 0 ? '0 KM' : `${v.mileage.toLocaleString()} km`}
-                        </span>
+                        
+                        {/* Status Badges */}
+                        {v.status === 'Sold' ? (
+                          <span className="absolute top-2.5 right-2.5 bg-red-600 text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full shadow-lg z-10 flex items-center gap-1 border border-white/20">
+                            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+                            Vendido
+                          </span>
+                        ) : v.status === 'Reserved' ? (
+                          <span className="absolute top-2.5 right-2.5 bg-amber-500 text-slate-950 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full shadow-lg z-10 flex items-center gap-1 border border-white/20">
+                            <Clock className="w-3 h-3 text-slate-950" />
+                            Reservado
+                          </span>
+                        ) : (
+                          <span className="absolute top-2.5 right-2.5 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10">
+                            {v.mileage === 0 ? '0 KM' : `${v.mileage.toLocaleString()} km`}
+                          </span>
+                        )}
+
+                        {/* Sold overlay watermark */}
+                        {v.status === 'Sold' && (
+                          <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[1px] flex items-center justify-center pointer-events-none">
+                            <span className="bg-red-600 text-white text-xs font-black uppercase px-4 py-1.5 rounded-full shadow-2xl tracking-wider border-2 border-white flex items-center gap-1.5 transform -rotate-3">
+                              VENDIDO
+                            </span>
+                          </div>
+                        )}
                       </div>
 
                       {/* Info Body */}
@@ -340,9 +365,19 @@ export default function InventoryView({ vehicles, onSelectVehicle, setView }: In
                               US$ {v.price.toLocaleString()}
                             </span>
                           </div>
-                          <span className="text-[11px] text-emerald-600 font-bold">
-                            Financiable
-                          </span>
+                          {v.status === 'Sold' ? (
+                            <span className="text-[11px] text-red-600 font-bold bg-red-50 px-2 py-0.5 rounded border border-red-200">
+                              Vendido
+                            </span>
+                          ) : v.status === 'Reserved' ? (
+                            <span className="text-[11px] text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                              Reservado
+                            </span>
+                          ) : (
+                            <span className="text-[11px] text-emerald-600 font-bold">
+                              Financiable
+                            </span>
+                          )}
                         </div>
                       </div>
                     </div>

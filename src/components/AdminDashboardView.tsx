@@ -166,7 +166,8 @@ export default function AdminDashboardView({
               { id: 'All', label: 'Todos' },
               { id: 'Active', label: 'Disponible' },
               { id: 'Reserved', label: 'Reservado' },
-              { id: 'Sold', label: 'Vendido' }
+              { id: 'Sold', label: 'Vendido' },
+              { id: 'Hidden', label: 'Oculto / Deshabilitado' }
             ].map(st => (
               <button
                 key={st.id}
@@ -228,14 +229,16 @@ export default function AdminDashboardView({
                       value={v.status}
                       onChange={(e) => onChangeVehicleStatus(v.id, e.target.value as any)}
                       className={`text-xs font-bold py-1 px-2.5 rounded-lg border cursor-pointer focus:outline-none ${
-                        v.status === 'Active' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
-                        v.status === 'Reserved' ? 'bg-amber-50 text-amber-700 border-amber-200' :
-                        'bg-slate-100 text-slate-600 border-slate-200'
+                        v.status === 'Active' ? 'bg-emerald-50 text-emerald-700 border-emerald-300' :
+                        v.status === 'Reserved' ? 'bg-amber-50 text-amber-700 border-amber-300' :
+                        v.status === 'Sold' ? 'bg-red-50 text-red-700 border-red-300' :
+                        'bg-slate-100 text-slate-600 border-slate-300'
                       }`}
                     >
-                      <option value="Active">Disponible</option>
-                      <option value="Reserved">Reservado</option>
-                      <option value="Sold">Vendido</option>
+                      <option value="Active">🟢 Disponible (Público)</option>
+                      <option value="Reserved">🟡 Reservado (Con etiqueta)</option>
+                      <option value="Sold">🔴 Vendido (Con etiqueta)</option>
+                      <option value="Hidden">👁️ Oculto / Deshabilitado (No visible)</option>
                     </select>
                   </td>
 
