@@ -8,11 +8,23 @@ export default {
     extend: {
       fontFamily: {
         sans: ["Inter", "ui-sans-serif", "system-ui", "sans-serif"],
-        display: ["Montserrat", "sans-serif"],
+        display: ["'Plus Jakarta Sans'", "Inter", "sans-serif"],
       },
       colors: {
-        "secondary-container": "var(--color-secondary-container)",
-        "on-secondary-container": "var(--color-on-secondary-container)",
+        brand: {
+          50: '#fff1f2',
+          100: '#ffe4e6',
+          200: '#fecdd3',
+          300: '#fda4af',
+          400: '#fb7185',
+          500: '#f43f5e',
+          600: '#e30613', // Car Seller Red
+          700: '#be123c',
+          800: '#9f1239',
+          900: '#881337',
+        },
+        "secondary-container": "#dc2626",
+        "on-secondary-container": "#ffffff",
         background: "var(--color-background)",
         surface: "var(--color-surface)",
         "surface-container": "var(--color-surface-container)",

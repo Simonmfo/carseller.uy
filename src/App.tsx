@@ -22,31 +22,19 @@ export default function App() {
   const [currentView, setCurrentView] = useState<'showroom' | 'inventory' | 'admin' | 'add-vehicle' | 'login'>('showroom');
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-
   // Operations handlers
   const handleSelectVehicle = (vehicle: Vehicle) => {
     setSelectedVehicle(vehicle);
-    setCurrentView('showroom');
   };
 
   const handleAddVehicle = (newVehicle: Vehicle) => {
     setVehicles(prev => [newVehicle, ...prev]);
     setSelectedVehicle(newVehicle);
-    // Also add a mock service appointment for testing fun!
-    const newService: ServiceAppointment = {
-      id: `ser-${Date.now()}`,
-      vehicleName: `${newVehicle.brand} ${newVehicle.model}`,
-      type: 'Inspección de Entrega VIP y Detallado',
-      dateTime: 'Mañana, 02:00 PM',
-      icon: 'palette'
-    };
-    setServiceAppointments(prev => [newService, ...prev]);
   };
 
   const handleDeleteVehicle = (id: string) => {
     setVehicles(prev => {
       const updated = prev.filter(v => v.id !== id);
-      // If we deleted the active showroom vehicle, select the next available one
       if (selectedVehicle.id === id && updated.length > 0) {
         setSelectedVehicle(updated[0]);
       }
@@ -56,7 +44,6 @@ export default function App() {
 
   const handleChangeVehicleStatus = (id: string, status: Vehicle['status']) => {
     setVehicles(prev => prev.map(v => v.id === id ? { ...v, status } : v));
-    // If the active vehicle changed, keep it synchronized in showroom too
     if (selectedVehicle.id === id) {
       setSelectedVehicle(prev => ({ ...prev, status }));
     }
@@ -64,13 +51,10 @@ export default function App() {
 
   const handleAddInquiry = (newInquiry: Inquiry) => {
     setInquiries(prev => [newInquiry, ...prev]);
-    
-    // Add an alert message or notification for admin logs
-    console.log(`Nueva consulta recibida de: ${newInquiry.fullName} para ${newInquiry.vehicleName}`);
   };
 
   return (
-    <div className="min-h-screen bg-background text-on-surface flex flex-col justify-between selection:bg-secondary selection:text-background font-sans overflow-x-hidden antialiased">
+    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between selection:bg-brand-600 selection:text-white font-sans overflow-x-hidden antialiased">
       
       {/* Universal Top Header */}
       <Header 
@@ -78,6 +62,7 @@ export default function App() {
         setView={setCurrentView} 
         isAuthenticated={isAuthenticated}
         setIsAuthenticated={setIsAuthenticated}
+        totalVehicles={vehicles.length}
       />
 
       {/* Interactive Main Workspace Content Area */}
@@ -85,6 +70,7 @@ export default function App() {
         <AnimatePresence mode="wait">
           {currentView === 'showroom' && (
             <ShowroomView 
+              key="showroom"
               vehicle={selectedVehicle}
               allVehicles={vehicles}
               onSelectVehicle={handleSelectVehicle}
@@ -95,6 +81,7 @@ export default function App() {
 
           {currentView === 'inventory' && (
             <InventoryView 
+              key="inventory"
               vehicles={vehicles}
               onSelectVehicle={handleSelectVehicle}
               setView={setCurrentView}
@@ -103,6 +90,7 @@ export default function App() {
 
           {currentView === 'admin' && isAuthenticated && (
             <AdminDashboardView 
+              key="admin"
               vehicles={vehicles}
               inquiries={inquiries}
               serviceAppointments={serviceAppointments}
@@ -115,6 +103,7 @@ export default function App() {
 
           {currentView === 'add-vehicle' && isAuthenticated && (
             <AddVehicleView 
+              key="add-vehicle"
               onAddVehicle={handleAddVehicle}
               setView={setCurrentView}
             />
@@ -122,6 +111,7 @@ export default function App() {
 
           {currentView === 'login' && !isAuthenticated && (
             <LoginView
+              key="login"
               onLogin={() => {
                 setIsAuthenticated(true);
                 setCurrentView('admin');

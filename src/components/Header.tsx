@@ -1,14 +1,33 @@
 import { useState } from 'react';
-import { Car, LayoutDashboard, PlusCircle, LogIn, LogOut, Menu, X } from 'lucide-react';
+import { 
+  Car, 
+  PlusCircle, 
+  LayoutDashboard, 
+  LogIn, 
+  LogOut, 
+  Menu, 
+  X,
+  Phone,
+  MapPin,
+  Clock,
+  MessageCircle
+} from 'lucide-react';
 
 interface HeaderProps {
   currentView: 'showroom' | 'inventory' | 'admin' | 'add-vehicle' | 'login';
   setView: (view: 'showroom' | 'inventory' | 'admin' | 'add-vehicle' | 'login') => void;
   isAuthenticated: boolean;
-  setIsAuthenticated: (isAuthenticated: boolean) => void;
+  setIsAuthenticated: (val: boolean) => void;
+  totalVehicles?: number;
 }
 
-export default function Header({ currentView, setView, isAuthenticated, setIsAuthenticated }: HeaderProps) {
+export default function Header({ 
+  currentView, 
+  setView, 
+  isAuthenticated, 
+  setIsAuthenticated,
+  totalVehicles = 8
+}: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleNavClick = (view: 'showroom' | 'inventory' | 'admin' | 'add-vehicle' | 'login') => {
@@ -17,197 +36,254 @@ export default function Header({ currentView, setView, isAuthenticated, setIsAut
   };
 
   return (
-    <header className="fixed top-0 w-full z-50 flex justify-between items-center px-6 md:px-12 h-20 bg-background/95 backdrop-blur-md border-b border-outline-variant transition-all duration-300">
-      <div className="flex items-center gap-8">
+    <header className="sticky top-0 w-full z-50 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm transition-all">
+      {/* Top Bar for Contact & Trust */}
+      <div className="hidden lg:block bg-slate-900 text-slate-300 text-xs py-2 px-6 md:px-12">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div className="flex items-center gap-6">
+            <span className="flex items-center gap-1.5 hover:text-white transition-colors">
+              <MapPin className="w-3.5 h-3.5 text-brand-600" />
+              Florida 1615, Paysandú, Uruguay
+            </span>
+            <span className="flex items-center gap-1.5 hover:text-white transition-colors">
+              <Clock className="w-3.5 h-3.5 text-brand-600" />
+              Lunes a Viernes de 8:00 a 18:00 hs
+            </span>
+          </div>
+          <div className="flex items-center gap-5">
+            <a 
+              href="tel:47232483" 
+              className="flex items-center gap-1.5 hover:text-white transition-colors"
+            >
+              <Phone className="w-3.5 h-3.5 text-brand-600" />
+              Tel: 472 32483
+            </a>
+            <a 
+              href="https://wa.me/59892614225?text=Hola%20Car%20Seller,%20me%20comunico%20desde%20la%20web" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 text-emerald-400 font-semibold hover:text-emerald-300 transition-colors"
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              WhatsApp: 092 614 225
+            </a>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Navbar */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 h-20 flex justify-between items-center">
+        {/* Brand Logo & Name */}
         <button 
-          onClick={() => setView('showroom')} 
-          className="flex items-center gap-3 font-display text-base md:text-xl font-black text-on-surface tracking-tighter uppercase focus:outline-none cursor-pointer group"
+          onClick={() => handleNavClick('showroom')} 
+          className="flex items-center gap-3.5 text-left focus:outline-none cursor-pointer group"
         >
           <img 
             src="/carseller-logo.png" 
             alt="Car Seller Logo" 
-            className="w-10 h-10 md:w-11 md:h-11 rounded-full object-cover border border-secondary/40 shadow-sm group-hover:scale-105 transition-transform" 
+            className="w-11 h-11 md:w-12 md:h-12 rounded-full object-cover shadow-sm group-hover:scale-105 transition-transform border border-slate-200" 
           />
-          <div className="flex flex-col text-left">
-            <span className="leading-none text-sm md:text-lg font-black tracking-tight">
-              CAR <span className="text-secondary group-hover:text-secondary-container transition-colors">SELLER</span>
-            </span>
-            <span className="text-[10px] text-on-surface-variant tracking-widest font-normal font-sans">
-              PAYSANDÚ · URUGUAY
+          <div className="flex flex-col">
+            <div className="font-display text-lg md:text-xl font-extrabold tracking-tight text-slate-900 leading-none">
+              CAR <span className="text-brand-600">SELLER</span>
+            </div>
+            <span className="text-[11px] font-medium text-slate-500 tracking-wider uppercase mt-1">
+              Automóviles · Paysandú
             </span>
           </div>
         </button>
-        
-        <nav className="hidden md:flex gap-6 items-center">
+
+        {/* Desktop Navigation Links */}
+        <nav className="hidden md:flex gap-8 items-center">
           <button
-            onClick={() => setView('showroom')}
-            className={`font-label-caps text-xs tracking-wider font-semibold py-2 transition-colors cursor-pointer ${
+            onClick={() => handleNavClick('showroom')}
+            className={`text-sm font-semibold transition-colors cursor-pointer py-1 relative ${
               currentView === 'showroom' 
-                ? 'text-secondary border-b-2 border-secondary pb-1' 
-                : 'text-on-surface-variant hover:text-on-surface'
+                ? 'text-brand-600 font-bold' 
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             Inicio
+            {currentView === 'showroom' && (
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-brand-600 rounded-full" />
+            )}
           </button>
+          
           <button
-            onClick={() => setView('inventory')}
-            className={`font-label-caps text-xs tracking-wider font-semibold py-2 transition-colors cursor-pointer ${
+            onClick={() => handleNavClick('inventory')}
+            className={`text-sm font-semibold transition-colors cursor-pointer py-1 relative flex items-center gap-2 ${
               currentView === 'inventory' 
-                ? 'text-secondary border-b-2 border-secondary pb-1' 
-                : 'text-on-surface-variant hover:text-on-surface'
+                ? 'text-brand-600 font-bold' 
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            Catalogo
+            Catálogo
+            <span className="bg-slate-100 text-slate-700 text-xs px-2 py-0.5 rounded-full font-bold border border-slate-200">
+              {totalVehicles}
+            </span>
+            {currentView === 'inventory' && (
+              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-brand-600 rounded-full" />
+            )}
           </button>
+
           {isAuthenticated && (
             <button
-              onClick={() => setView('admin')}
-              className={`font-label-caps text-xs tracking-wider font-semibold py-2 transition-colors cursor-pointer ${
+              onClick={() => handleNavClick('admin')}
+              className={`text-sm font-semibold transition-colors cursor-pointer py-1 relative ${
                 currentView === 'admin' || currentView === 'add-vehicle'
-                  ? 'text-secondary border-b-2 border-secondary pb-1' 
-                  : 'text-on-surface-variant hover:text-on-surface'
+                  ? 'text-brand-600 font-bold' 
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
-              Panel de Admin
+              Panel de Administración
+              {(currentView === 'admin' || currentView === 'add-vehicle') && (
+                <span className="absolute bottom-0 left-0 w-full h-0.5 bg-brand-600 rounded-full" />
+              )}
             </button>
           )}
         </nav>
-      </div>
 
-      <div className="flex items-center gap-4">
-        {/* Hamburger Menu Toggle (Mobile) */}
-        <button 
-          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          className="md:hidden text-on-surface p-2 hover:bg-surface-container rounded-full transition-colors"
-        >
-          {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-
-        <div className="hidden md:flex items-center gap-4">
-          {isAuthenticated ? (
-          <>
-            <button
-              onClick={() => {
-                const nextMode = currentView === 'admin' || currentView === 'add-vehicle' ? 'showroom' : 'admin';
-                setView(nextMode);
-              }}
-              className="hidden sm:flex items-center gap-2 px-4 py-2 border border-outline-variant hover:border-secondary rounded text-xs tracking-wider font-bold uppercase transition-all duration-200 cursor-pointer text-on-surface-variant hover:text-on-surface"
-            >
-              {currentView === 'admin' || currentView === 'add-vehicle' ? (
-                <>
-                  <Car className="w-4 h-4 text-secondary" />
-                  Ver Tienda
-                </>
-              ) : (
-                <>
-                  <LayoutDashboard className="w-4 h-4 text-secondary" />
-                  Gestionar Inventario
-                </>
-              )}
-            </button>
-
-            <button 
-              onClick={() => setView('add-vehicle')}
-              className="bg-secondary-container text-on-secondary-container hover:brightness-110 active:scale-95 duration-100 px-4 md:px-6 py-2.5 rounded text-xs font-bold uppercase tracking-widest transition-all cursor-pointer flex items-center gap-2 font-display"
-            >
-              <PlusCircle className="w-4 h-4" />
-              Publicar Auto
-            </button>
-            <button
-              onClick={() => {
-                setIsAuthenticated(false);
-                setView('showroom');
-              }}
-              className="text-on-surface-variant hover:text-error transition-colors p-2"
-              title="Cerrar Sesión"
-            >
-              <LogOut className="w-5 h-5" />
-            </button>
-          </>
-        ) : (
-          <button 
-            onClick={() => setView('login')}
-            className="border border-outline-variant hover:border-secondary text-on-surface-variant hover:text-secondary px-4 py-2 rounded text-xs font-bold uppercase tracking-widest transition-all cursor-pointer flex items-center gap-2 font-display"
+        {/* Right Action Buttons */}
+        <div className="flex items-center gap-3">
+          {/* Direct WhatsApp Call to Action */}
+          <a
+            href="https://wa.me/59892614225?text=Hola%20Car%20Seller,%20me%20comunico%20desde%20la%20web"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider px-4 py-2.5 rounded-lg shadow-sm hover:shadow transition-all"
           >
-            <LogIn className="w-4 h-4" />
-            Acceso Admin
+            <MessageCircle className="w-4 h-4 fill-white text-emerald-600" />
+            <span>WhatsApp</span>
+          </a>
+
+          {isAuthenticated ? (
+            <div className="hidden md:flex items-center gap-2">
+              <button
+                onClick={() => handleNavClick(currentView === 'admin' ? 'showroom' : 'admin')}
+                className="flex items-center gap-1.5 px-3 py-2 border border-slate-300 hover:border-slate-400 rounded-lg text-xs font-semibold text-slate-700 hover:text-slate-900 transition-colors"
+              >
+                {currentView === 'admin' ? (
+                  <><Car className="w-4 h-4 text-brand-600" /> Ver Tienda</>
+                ) : (
+                  <><LayoutDashboard className="w-4 h-4 text-brand-600" /> Gestión</>
+                )}
+              </button>
+              <button 
+                onClick={() => handleNavClick('add-vehicle')}
+                className="bg-brand-600 hover:bg-brand-700 text-white px-3.5 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5"
+              >
+                <PlusCircle className="w-4 h-4" />
+                Publicar
+              </button>
+              <button
+                onClick={() => {
+                  setIsAuthenticated(false);
+                  setView('showroom');
+                }}
+                className="p-2 text-slate-400 hover:text-red-600 transition-colors"
+                title="Cerrar Sesión"
+              >
+                <LogOut className="w-4 h-4" />
+              </button>
+            </div>
+          ) : (
+            <button 
+              onClick={() => handleNavClick('login')}
+              className="hidden md:flex items-center gap-1.5 text-slate-500 hover:text-slate-900 text-xs font-medium px-3 py-2 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+              title="Acceso administrativo"
+            >
+              <LogIn className="w-3.5 h-3.5" />
+              <span>Admin</span>
+            </button>
+          )}
+
+          {/* Mobile Hamburger Menu Toggle */}
+          <button 
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            className="md:hidden p-2 rounded-lg text-slate-700 hover:bg-slate-100 transition-colors"
+            aria-label="Abrir menú"
+          >
+            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
-        )}
         </div>
       </div>
 
-      {/* Mobile Menu Overlay */}
+      {/* Mobile Menu Dropdown */}
       {isMobileMenuOpen && (
-        <div className="absolute top-20 left-0 w-full bg-surface border-b border-outline-variant shadow-xl md:hidden flex flex-col p-4 gap-4 animate-in slide-in-from-top-4">
+        <div className="md:hidden bg-white border-b border-slate-200 px-6 py-4 space-y-3 shadow-lg">
           <button
             onClick={() => handleNavClick('showroom')}
-            className={`text-left font-label-caps text-sm tracking-wider font-semibold py-3 px-4 rounded transition-colors ${
-              currentView === 'showroom' ? 'bg-secondary/10 text-secondary' : 'text-on-surface-variant'
+            className={`w-full text-left py-2.5 px-3 rounded-lg text-sm font-semibold transition-colors ${
+              currentView === 'showroom' ? 'bg-red-50 text-brand-600 font-bold' : 'text-slate-700'
             }`}
           >
             Inicio
           </button>
           <button
             onClick={() => handleNavClick('inventory')}
-            className={`text-left font-label-caps text-sm tracking-wider font-semibold py-3 px-4 rounded transition-colors ${
-              currentView === 'inventory' ? 'bg-secondary/10 text-secondary' : 'text-on-surface-variant'
+            className={`w-full text-left py-2.5 px-3 rounded-lg text-sm font-semibold transition-colors flex justify-between items-center ${
+              currentView === 'inventory' ? 'bg-red-50 text-brand-600 font-bold' : 'text-slate-700'
             }`}
           >
-            Catálogo
+            <span>Catálogo Completo</span>
+            <span className="bg-slate-100 text-slate-600 text-xs px-2 py-0.5 rounded-full font-bold">
+              {totalVehicles}
+            </span>
           </button>
-          
-          {isAuthenticated && (
-            <button
-              onClick={() => handleNavClick('admin')}
-              className={`text-left font-label-caps text-sm tracking-wider font-semibold py-3 px-4 rounded transition-colors ${
-                currentView === 'admin' ? 'bg-secondary/10 text-secondary' : 'text-on-surface-variant'
-              }`}
-            >
-              Panel de Admin
-            </button>
-          )}
 
-          <div className="h-px w-full bg-outline-variant my-2"></div>
+          <a
+            href="https://wa.me/59892614225?text=Hola%20Car%20Seller,%20me%20comunico%20desde%20la%20web"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white font-bold text-sm py-3 rounded-lg shadow-sm"
+          >
+            <MessageCircle className="w-4 h-4 fill-white text-emerald-600" />
+            Consultar por WhatsApp
+          </a>
 
-          {isAuthenticated ? (
-            <div className="flex flex-col gap-3">
+          <div className="pt-2 border-t border-slate-100 flex flex-col gap-1 text-xs text-slate-500">
+            <span className="flex items-center gap-1.5 py-1">
+              <MapPin className="w-3.5 h-3.5 text-brand-600" /> Florida 1615, Paysandú
+            </span>
+            <span className="flex items-center gap-1.5 py-1">
+              <Phone className="w-3.5 h-3.5 text-brand-600" /> 472 32483 / 092 614 225
+            </span>
+          </div>
+
+          <div className="pt-2 border-t border-slate-100">
+            {isAuthenticated ? (
+              <div className="space-y-2">
+                <button
+                  onClick={() => handleNavClick('admin')}
+                  className="w-full text-left py-2 px-3 rounded-lg text-sm font-bold text-slate-800 flex items-center gap-2"
+                >
+                  <LayoutDashboard className="w-4 h-4 text-brand-600" /> Panel de Gestión
+                </button>
+                <button
+                  onClick={() => handleNavClick('add-vehicle')}
+                  className="w-full text-left py-2 px-3 rounded-lg text-sm font-bold text-brand-600 flex items-center gap-2"
+                >
+                  <PlusCircle className="w-4 h-4" /> Publicar Auto
+                </button>
+                <button
+                  onClick={() => {
+                    setIsAuthenticated(false);
+                    handleNavClick('showroom');
+                  }}
+                  className="w-full text-left py-2 px-3 rounded-lg text-sm font-medium text-red-600 flex items-center gap-2"
+                >
+                  <LogOut className="w-4 h-4" /> Cerrar Sesión
+                </button>
+              </div>
+            ) : (
               <button
-                onClick={() => {
-                  const nextMode = currentView === 'admin' || currentView === 'add-vehicle' ? 'showroom' : 'admin';
-                  handleNavClick(nextMode);
-                }}
-                className="flex items-center gap-3 px-4 py-3 border border-outline-variant rounded text-sm font-bold uppercase text-on-surface"
+                onClick={() => handleNavClick('login')}
+                className="w-full text-left py-2 px-3 rounded-lg text-xs font-semibold text-slate-500 flex items-center gap-2"
               >
-                {currentView === 'admin' || currentView === 'add-vehicle' ? (
-                  <><Car className="w-5 h-5 text-secondary" /> Ver Tienda</>
-                ) : (
-                  <><LayoutDashboard className="w-5 h-5 text-secondary" /> Gestionar Inventario</>
-                )}
+                <LogIn className="w-4 h-4" /> Acceso Administrativo
               </button>
-              <button 
-                onClick={() => handleNavClick('add-vehicle')}
-                className="bg-secondary-container text-on-secondary-container py-3 px-4 rounded text-sm font-bold uppercase flex items-center gap-3"
-              >
-                <PlusCircle className="w-5 h-5" /> Publicar Auto
-              </button>
-              <button
-                onClick={() => {
-                  setIsAuthenticated(false);
-                  handleNavClick('showroom');
-                }}
-                className="text-error py-3 px-4 flex items-center gap-3 font-bold text-sm uppercase"
-              >
-                <LogOut className="w-5 h-5" /> Cerrar Sesión
-              </button>
-            </div>
-          ) : (
-            <button 
-              onClick={() => handleNavClick('login')}
-              className="border border-outline-variant py-3 px-4 rounded text-sm font-bold uppercase flex items-center gap-3 text-on-surface"
-            >
-              <LogIn className="w-5 h-5" /> Acceso Admin
-            </button>
-          )}
+            )}
+          </div>
         </div>
       )}
     </header>

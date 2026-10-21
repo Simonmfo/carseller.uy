@@ -1,6 +1,6 @@
 import { useState, FormEvent } from 'react';
 import { motion } from 'motion/react';
-import { Lock, User, ArrowRight } from 'lucide-react';
+import { Lock, User, ArrowRight, ShieldCheck } from 'lucide-react';
 
 interface LoginViewProps {
   onLogin: () => void;
@@ -14,86 +14,98 @@ export default function LoginView({ onLogin, setView }: LoginViewProps) {
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    // Simple mock authentication
     if (username === 'admin' && password === 'admin') {
       onLogin();
     } else {
-      setError('Credenciales incorrectas');
+      setError('Credenciales incorrectas. Pruebe con usuario "admin" y contraseña "admin".');
     }
   };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 15 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="min-h-[80vh] flex items-center justify-center px-4"
+      exit={{ opacity: 0, y: -15 }}
+      className="min-h-[75vh] flex items-center justify-center px-4 py-12 bg-slate-50"
     >
-      <div className="w-full max-w-md bg-surface border border-outline-variant rounded-xl p-8 shadow-2xl relative overflow-hidden">
-        {/* Glow effect */}
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-secondary to-secondary-container" />
+      <div className="w-full max-w-md bg-white border border-slate-200 rounded-2xl p-8 shadow-xl relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-1.5 bg-brand-600" />
         
-        <h2 className="text-3xl font-display font-black text-on-surface mb-2 tracking-tight">
-          ACCESO <span className="text-secondary">PRIVADO</span>
-        </h2>
-        <p className="text-on-surface-variant text-sm mb-8">
-          Ingrese sus credenciales para administrar la plataforma.
-        </p>
+        <div className="text-center mb-8">
+          <div className="w-12 h-12 bg-red-50 text-brand-600 rounded-xl flex items-center justify-center mx-auto mb-3 border border-red-100">
+            <Lock className="w-6 h-6" />
+          </div>
+          <h2 className="text-2xl font-display font-extrabold text-slate-900 tracking-tight">
+            Acceso Administrativo
+          </h2>
+          <p className="text-slate-500 text-xs mt-1">
+            Gestión interna de inventario y publicaciones de Car Seller
+          </p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-xs font-label-caps tracking-widest text-on-surface-variant block">
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-700 block">
               Usuario
             </label>
             <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="text"
+                required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full bg-background border border-outline-variant rounded p-3 pl-10 text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary transition-all outline-none"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 pl-10 text-sm text-slate-900 focus:bg-white focus:border-brand-600 focus:ring-2 focus:ring-brand-500/20 transition-all outline-none"
                 placeholder="admin"
               />
             </div>
           </div>
 
-          <div className="space-y-2">
-            <label className="text-xs font-label-caps tracking-widest text-on-surface-variant block">
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-700 block">
               Contraseña
             </label>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-on-surface-variant" />
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="password"
+                required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full bg-background border border-outline-variant rounded p-3 pl-10 text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary transition-all outline-none"
-                placeholder="admin"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 pl-10 text-sm text-slate-900 focus:bg-white focus:border-brand-600 focus:ring-2 focus:ring-brand-500/20 transition-all outline-none"
+                placeholder="••••••••"
               />
             </div>
           </div>
 
           {error && (
-            <p className="text-error text-xs font-medium">{error}</p>
+            <p className="text-red-600 text-xs font-semibold bg-red-50 p-2.5 rounded-lg border border-red-200">
+              {error}
+            </p>
           )}
 
-          <div className="pt-2 flex gap-4">
+          <div className="pt-2 flex gap-3">
             <button
               type="button"
               onClick={() => setView('showroom')}
-              className="flex-1 px-4 py-3 border border-outline-variant rounded text-on-surface-variant hover:text-on-surface transition-colors text-sm font-bold tracking-wide uppercase"
+              className="flex-1 px-4 py-3 border border-slate-300 rounded-xl text-slate-700 hover:bg-slate-50 transition-colors text-xs font-bold uppercase tracking-wider cursor-pointer"
             >
-              Cancelar
+              Volver
             </button>
             <button
               type="submit"
-              className="flex-1 bg-secondary text-background hover:bg-secondary-container px-4 py-3 rounded transition-colors text-sm font-bold tracking-wide uppercase flex items-center justify-center gap-2 group"
+              className="flex-1 bg-brand-600 hover:bg-brand-700 text-white px-4 py-3 rounded-xl transition-all text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer shadow-sm hover:shadow"
             >
-              Entrar
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              Ingresar
+              <ArrowRight className="w-4 h-4" />
             </button>
           </div>
         </form>
+
+        <div className="mt-8 pt-4 border-t border-slate-100 text-center text-xs text-slate-400 flex items-center justify-center gap-1.5">
+          <ShieldCheck className="w-4 h-4 text-emerald-600" />
+          <span>Acceso seguro protegido · Car Seller Paysandú</span>
+        </div>
       </div>
     </motion.div>
   );
