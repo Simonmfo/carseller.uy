@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -10,6 +10,7 @@ import LoginView from './components/LoginView';
 
 import { Vehicle, Inquiry, ServiceAppointment } from './types';
 import { INITIAL_VEHICLES, DEFAULT_INQUIRIES, UPCOMING_SERVICES } from './data';
+import { supabase } from './lib/supabase';
 
 export default function App() {
   // Global State Engine
@@ -22,17 +23,52 @@ export default function App() {
   const [currentView, setCurrentView] = useState<'showroom' | 'inventory' | 'admin' | 'add-vehicle' | 'login'>('showroom');
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
+  // Sync state with Supabase cloud database
+  useEffect(() => {
+    async function fetchSupabaseData() {
+      try {
+        const { data: dbVehicles, error: vError } = await supabase
+          .from('vehicles')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (!vError && dbVehicles && dbVehicles.length > 0) {
+          setVehicles(dbVehicles as Vehicle[]);
+          setSelectedVehicle(dbVehicles[0] as Vehicle);
+        }
+
+        const { data: dbInquiries, error: iError } = await supabase
+          .from('inquiries')
+          .select('*')
+          .order('created_at', { ascending: false });
+
+        if (!iError && dbInquiries && dbInquiries.length > 0) {
+          setInquiries(dbInquiries as Inquiry[]);
+        }
+      } catch (err) {
+        console.warn('Supabase initial fetch fallback to local data:', err);
+      }
+    }
+
+    fetchSupabaseData();
+  }, []);
+
   // Operations handlers
   const handleSelectVehicle = (vehicle: Vehicle) => {
     setSelectedVehicle(vehicle);
   };
 
-  const handleAddVehicle = (newVehicle: Vehicle) => {
+  const handleAddVehicle = async (newVehicle: Vehicle) => {
     setVehicles(prev => [newVehicle, ...prev]);
     setSelectedVehicle(newVehicle);
+    try {
+      await supabase.from('vehicles').insert([newVehicle]);
+    } catch (e) {
+      console.error('Error inserting vehicle into Supabase:', e);
+    }
   };
 
-  const handleDeleteVehicle = (id: string) => {
+  const handleDeleteVehicle = async (id: string) => {
     setVehicles(prev => {
       const updated = prev.filter(v => v.id !== id);
       if (selectedVehicle.id === id && updated.length > 0) {
@@ -40,17 +76,32 @@ export default function App() {
       }
       return updated;
     });
+    try {
+      await supabase.from('vehicles').delete().eq('id', id);
+    } catch (e) {
+      console.error('Error deleting vehicle from Supabase:', e);
+    }
   };
 
-  const handleChangeVehicleStatus = (id: string, status: Vehicle['status']) => {
+  const handleChangeVehicleStatus = async (id: string, status: Vehicle['status']) => {
     setVehicles(prev => prev.map(v => v.id === id ? { ...v, status } : v));
     if (selectedVehicle.id === id) {
       setSelectedVehicle(prev => ({ ...prev, status }));
     }
+    try {
+      await supabase.from('vehicles').update({ status }).eq('id', id);
+    } catch (e) {
+      console.error('Error updating vehicle status in Supabase:', e);
+    }
   };
 
-  const handleAddInquiry = (newInquiry: Inquiry) => {
+  const handleAddInquiry = async (newInquiry: Inquiry) => {
     setInquiries(prev => [newInquiry, ...prev]);
+    try {
+      await supabase.from('inquiries').insert([newInquiry]);
+    } catch (e) {
+      console.error('Error saving inquiry into Supabase:', e);
+    }
   };
 
   return (
