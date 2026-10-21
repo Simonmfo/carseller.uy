@@ -19,7 +19,7 @@ export default function Footer({ setView }: FooterProps) {
           </div>
         </div>
         <p className="font-sans text-xs md:text-sm text-on-surface-variant max-w-sm text-center md:text-left leading-relaxed">
-          Compra, venta, permuta y consignación de vehículos 0 km y seleccionados. Financiación bancaria y particular a tu medida.
+          Compra, venta, permuta y consignación de vehículos 0 km y seleccionados. Financiación hasta el 100% en hasta 60 y 72 cuotas.
         </p>
         <div className="flex flex-col gap-1 text-xs text-on-surface-variant font-sans">
           <span className="flex items-center gap-2">
@@ -28,7 +28,7 @@ export default function Footer({ setView }: FooterProps) {
           </span>
           <span className="flex items-center gap-2">
             <Clock className="w-3.5 h-3.5 text-secondary" />
-            Lunes a Viernes de 8:30 a 18:30 hs
+            Lunes a Viernes de 8:00 a 18:00 hs
           </span>
         </div>
       </div>
@@ -69,7 +69,7 @@ export default function Footer({ setView }: FooterProps) {
           </a>
         </div>
         <p className="font-sans text-[11px] text-on-surface-variant text-center md:text-right">
-          &copy; {new Date().getFullYear()} Car Seller Automóviles (carseller.uy). Tel: 472 32483 / 092 614 225.
+          &copy; {new Date().getFullYear()} Car Seller Paysandú. Tel: 472 32483 / 092 614 225.
         </p>
       </div>
     </footer>

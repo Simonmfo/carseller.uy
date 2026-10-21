@@ -33,7 +33,7 @@ export default function Header({ currentView, setView, isAuthenticated, setIsAut
               CAR <span className="text-secondary group-hover:text-secondary-container transition-colors">SELLER</span>
             </span>
             <span className="text-[10px] text-on-surface-variant tracking-widest font-normal font-sans">
-              CARSELLER.UY · PAYSANDÚ
+              PAYSANDÚ · URUGUAY
             </span>
           </div>
         </button>

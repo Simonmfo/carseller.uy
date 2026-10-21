@@ -171,7 +171,7 @@ export default function ShowroomView({
           </p>
           <p className="text-sm md:text-base text-on-surface-variant max-w-2xl mx-auto leading-relaxed font-sans drop-shadow-md font-medium">
             Tu automotora de confianza en Paysandú. Venta, permuta y consignación de vehículos 0 km y seleccionados.
-            Financiación a tu medida en pesos o dólares. Venta, permuta y consignaciones. Te esperamos en Florida 1615.
+            Financiación hasta el 100% en hasta 60 y 72 cuotas. Te esperamos en Florida 1615.
           </p>
         </div>
       </section>
