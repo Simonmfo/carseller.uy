@@ -80,6 +80,7 @@ export default function ShowroomView({
   // Filtered vehicles for the showroom grid
   const displayedVehicles = useMemo(() => {
     return allVehicles.filter(v => {
+      if (v.status === 'Sold') return false;
       const matchBrand = selectedBrand === 'Todas' || v.brand === selectedBrand;
       const matchCat = selectedCategory === 'Todas' || v.category.toLowerCase().includes(selectedCategory.toLowerCase());
       let matchPrice = true;
@@ -91,7 +92,8 @@ export default function ShowroomView({
   }, [allVehicles, selectedBrand, selectedCategory, selectedPriceMax]);
 
   const uniqueBrands = useMemo(() => {
-    return ['Todas', ...Array.from(new Set(allVehicles.map(v => v.brand)))];
+    const available = allVehicles.filter(v => v.status !== 'Sold');
+    return ['Todas', ...Array.from(new Set(available.map(v => v.brand)))];
   }, [allVehicles]);
 
   const handleSubmitInquiry = (e: FormEvent) => {
@@ -147,7 +149,7 @@ export default function ShowroomView({
                 className="bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm px-6 py-3.5 rounded-xl shadow-lg hover:shadow-xl transition-all flex items-center gap-2 cursor-pointer"
               >
                 <Car className="w-4 h-4" />
-                Explorar Catálogo ({allVehicles.length} unidades)
+                Explorar Catálogo ({allVehicles.filter(v => v.status !== "Sold").length} unidades)
               </button>
 
               <a

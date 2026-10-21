@@ -34,7 +34,8 @@ export default function InventoryView({ vehicles, onSelectVehicle, setView }: In
 
   // Extract unique brands
   const brandsList = useMemo(() => {
-    const brands = new Set(vehicles.map(v => v.brand));
+    const available = vehicles.filter(v => v.status !== 'Sold');
+    const brands = new Set(available.map(v => v.brand));
     return ['Todas', ...Array.from(brands)];
   }, [vehicles]);
 
@@ -55,6 +56,9 @@ export default function InventoryView({ vehicles, onSelectVehicle, setView }: In
   // Filter and Sort Vehicles
   const filteredVehicles = useMemo(() => {
     return vehicles.filter(v => {
+      // Exclude vehicles marked as Sold from the public catalog
+      if (v.status === 'Sold') return false;
+
       const matchBrand = selectedBrand === 'Todas' || v.brand === selectedBrand;
       const matchCategory = selectedCategory === 'Todas' || v.category.toLowerCase().includes(selectedCategory.toLowerCase());
       const matchSearch = searchModel === '' || 
@@ -98,7 +102,7 @@ export default function InventoryView({ vehicles, onSelectVehicle, setView }: In
 
           <div className="flex items-center gap-3">
             <span className="text-xs text-slate-500 font-semibold bg-white px-3 py-1.5 rounded-lg border border-slate-200">
-              {filteredVehicles.length} de {vehicles.length} unidades disponibles
+              {filteredVehicles.length} de {vehicles.filter(v => v.status !== "Sold").length} unidades disponibles
             </span>
 
             <button

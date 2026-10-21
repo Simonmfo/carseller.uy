@@ -152,12 +152,17 @@ export default function App() {
   };
 
   const handleChangeVehicleStatus = async (id: string, status: Vehicle["status"]) => {
-    setVehicles(prev => prev.map(v => v.id === id ? { ...v, status } : v));
-    if (selectedVehicle.id === id) {
-      setSelectedVehicle(prev => ({ ...prev, status }));
-    }
+    setVehicles(prev => {
+      const updated = prev.map(v => v.id === id ? { ...v, status } : v);
+      if (status === 'Sold' && selectedVehicle.id === id) {
+        const nextActive = updated.find(v => v.status !== 'Sold');
+        if (nextActive) setSelectedVehicle(nextActive);
+      }
+      return updated;
+    });
     try {
-      await supabase.from("vehicles").update({ status }).eq("id", id);
+      const { error } = await supabase.from("vehicles").update({ status }).eq("id", id);
+      if (error) console.error("Error updating status in Supabase:", error);
     } catch (e) {
       console.error("Error updating vehicle status in Supabase:", e);
     }
@@ -181,7 +186,7 @@ export default function App() {
         setView={handleSetView} 
         isAuthenticated={isAuthenticated}
         setIsAuthenticated={handleSetAuthenticated}
-        totalVehicles={vehicles.length}
+        totalVehicles={vehicles.filter(v => v.status !== "Sold").length}
       />
 
       {/* Interactive Main Workspace Content Area */}
