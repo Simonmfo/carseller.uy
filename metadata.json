@@ -1,0 +1,6 @@
+{
+  "name": "Car Seller",
+  "description": "Plataforma de exhibición, catálogo y gestión de inventario para Car Seller Automóviles (carseller.uy - Paysandú, Uruguay).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

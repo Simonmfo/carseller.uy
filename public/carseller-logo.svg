@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <linearGradient id="csGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffb3b1" />
+      <stop offset="50%" stop-color="#ff6b6b" />
+      <stop offset="100%" stop-color="#ad0224" />
+    </linearGradient>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1c2024" />
+      <stop offset="100%" stop-color="#0b0f12" />
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background circle with subtle border -->
+  <rect width="500" height="500" rx="250" fill="url(#bgGradient)"/>
+  <circle cx="250" cy="250" r="238" fill="none" stroke="url(#csGradient)" stroke-width="6" opacity="0.8" />
+  <circle cx="250" cy="250" r="226" fill="none" stroke="#45474a" stroke-width="1.5" stroke-dasharray="6 4" opacity="0.6" />
+
+  <!-- Stylized Sports Car Silhouette / Wing -->
+  <g filter="url(#glow)">
+    <!-- Aerodynamic Roof & Body Line -->
+    <path d="M 110 265 C 130 250, 175 220, 230 200 C 290 180, 350 205, 385 240 C 360 238, 300 230, 240 242 C 185 252, 140 268, 110 265 Z" fill="url(#csGradient)" />
+    
+    <!-- Dynamic Lower Body & Air Intake Sweep -->
+    <path d="M 95 282 C 140 270, 220 260, 310 262 C 375 264, 405 272, 415 285 C 380 286, 330 280, 260 282 C 180 284, 120 292, 95 282 Z" fill="url(#csGradient)" opacity="0.85" />
+    
+    <!-- Wheel Arch Accents -->
+    <path d="M 140 295 A 25 25 0 0 1 185 295" fill="none" stroke="url(#csGradient)" stroke-width="5" stroke-linecap="round" />
+    <path d="M 325 295 A 25 25 0 0 1 370 295" fill="none" stroke="url(#csGradient)" stroke-width="5" stroke-linecap="round" />
+  </g>
+
+  <!-- Monogram CS & Brand Name -->
+  <text x="250" y="360" font-family="'Montserrat', 'Inter', sans-serif" font-weight="900" font-size="44" fill="#ffffff" text-anchor="middle" letter-spacing="4">
+    CAR<tspan fill="#ffb3b1">SELLER</tspan>
+  </text>
+  
+  <text x="250" y="390" font-family="'Inter', sans-serif" font-weight="700" font-size="16" fill="#c6c6ca" text-anchor="middle" letter-spacing="8">
+    .UY · AUTOMÓVILES
+  </text>
+
+  <!-- Star accents -->
+  <polygon points="250,150 254,162 266,162 256,170 260,182 250,174 240,182 244,170 234,162 246,162" fill="#ffb3b1" />
+</svg>
