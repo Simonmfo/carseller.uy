@@ -295,7 +295,7 @@ export default function InventoryView({ vehicles, onSelectVehicle, setView }: In
                     className="bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-md transition-all group flex flex-col justify-between"
                   >
                     <div>
-                      {/* Image Thumbnail */}
+                      {/* Image Thumbnail with Diagonal Ribbon */}
                       <div className="relative aspect-[16/10] bg-slate-100 overflow-hidden">
                         <img
                           src={v.image}
@@ -307,30 +307,28 @@ export default function InventoryView({ vehicles, onSelectVehicle, setView }: In
                         <span className="absolute top-2.5 left-2.5 bg-slate-900/80 backdrop-blur-sm text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase z-10">
                           Año {v.year}
                         </span>
-                        
-                        {/* Status Badges */}
-                        {v.status === 'Sold' ? (
-                          <span className="absolute top-2.5 right-2.5 bg-red-600 text-white text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full shadow-lg z-10 flex items-center gap-1 border border-white/20">
-                            <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
-                            Vendido
-                          </span>
-                        ) : v.status === 'Reserved' ? (
-                          <span className="absolute top-2.5 right-2.5 bg-amber-500 text-slate-950 text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full shadow-lg z-10 flex items-center gap-1 border border-white/20">
-                            <Clock className="w-3 h-3 text-slate-950" />
-                            Reservado
-                          </span>
-                        ) : (
+
+                        {v.status === 'Active' && (
                           <span className="absolute top-2.5 right-2.5 bg-emerald-600 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10">
                             {v.mileage === 0 ? '0 KM' : `${v.mileage.toLocaleString()} km`}
                           </span>
                         )}
 
-                        {/* Sold overlay watermark */}
+                        {/* Diagonal Ribbon for Sold */}
                         {v.status === 'Sold' && (
-                          <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-[1px] flex items-center justify-center pointer-events-none">
-                            <span className="bg-red-600 text-white text-xs font-black uppercase px-4 py-1.5 rounded-full shadow-2xl tracking-wider border-2 border-white flex items-center gap-1.5 transform -rotate-3">
+                          <div className="absolute top-0 right-0 w-28 h-28 overflow-hidden z-20 pointer-events-none">
+                            <div className="absolute top-[20px] -right-[36px] w-[140px] transform rotate-45 bg-red-600 text-white font-black text-[10px] tracking-widest uppercase text-center py-1 shadow-md border-y border-white/30">
                               VENDIDO
-                            </span>
+                            </div>
+                          </div>
+                        )}
+
+                        {/* Diagonal Ribbon for Reserved */}
+                        {v.status === 'Reserved' && (
+                          <div className="absolute top-0 right-0 w-28 h-28 overflow-hidden z-20 pointer-events-none">
+                            <div className="absolute top-[20px] -right-[36px] w-[140px] transform rotate-45 bg-amber-500 text-slate-950 font-black text-[10px] tracking-widest uppercase text-center py-1 shadow-md border-y border-white/40">
+                              RESERVADO
+                            </div>
                           </div>
                         )}
                       </div>

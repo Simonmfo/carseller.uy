@@ -295,26 +295,37 @@ export default function ShowroomView({
               <img
                 src={images[activeImageIndex]}
                 alt={`${vehicle.brand} ${vehicle.model}`}
-                className="w-full h-full object-cover transition-all duration-300"
+                className={`w-full h-full object-cover transition-all duration-300 ${
+                  vehicle.status === 'Sold' ? 'grayscale-[25%]': ''
+                }`}
               />
-              {vehicle.status === 'Sold' ? (
-                <span className="absolute top-3 left-3 bg-red-600 text-white text-xs font-black px-3.5 py-1 rounded-full uppercase tracking-wider shadow-lg flex items-center gap-1.5 border border-white/20 z-10">
-                  <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
-                  VENDIDO
-                </span>
-              ) : vehicle.status === 'Reserved' ? (
-                <span className="absolute top-3 left-3 bg-amber-500 text-slate-950 text-xs font-black px-3.5 py-1 rounded-full uppercase tracking-wider shadow-lg flex items-center gap-1.5 border border-white/20 z-10">
-                  <Clock className="w-3.5 h-3.5 text-slate-950" />
-                  RESERVADO
-                </span>
-              ) : (
-                <span className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider z-10">
-                  Disponible
+
+              <span className="absolute top-3 left-3 bg-slate-900/80 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider z-10">
+                {vehicle.status === 'Active' ? 'Disponible' : vehicle.status === 'Sold' ? 'Vendido' : vehicle.status === 'Reserved' ? 'Reservado' : vehicle.status}
+              </span>
+
+              {vehicle.status === 'Active' && (
+                <span className="absolute top-3 right-3 bg-brand-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider z-10">
+                  Año {vehicle.year}
                 </span>
               )}
-              <span className="absolute top-3 right-3 bg-brand-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                Año {vehicle.year}
-              </span>
+
+              {/* Diagonal Ribbon on Hero Showcase */}
+              {vehicle.status === 'Sold' && (
+                <div className="absolute top-0 right-0 w-36 h-36 overflow-hidden z-20 pointer-events-none">
+                  <div className="absolute top-[28px] -right-[46px] w-[180px] transform rotate-45 bg-red-600 text-white font-black text-xs tracking-widest uppercase text-center py-1.5 shadow-2xl border-y-2 border-white">
+                    VENDIDO
+                  </div>
+                </div>
+              )}
+
+              {vehicle.status === 'Reserved' && (
+                <div className="absolute top-0 right-0 w-36 h-36 overflow-hidden z-20 pointer-events-none">
+                  <div className="absolute top-[28px] -right-[46px] w-[180px] transform rotate-45 bg-amber-500 text-slate-950 font-black text-xs tracking-widest uppercase text-center py-1.5 shadow-2xl border-y-2 border-white">
+                    RESERVADO
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Thumbnail Navigation */}
@@ -341,6 +352,26 @@ export default function ShowroomView({
           <div className="lg:col-span-5 space-y-6">
             
             <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm space-y-5">
+              {/* Status Notice Banner in Hero */}
+              {vehicle.status === 'Sold' && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl font-bold text-xs flex items-center gap-2.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-600 animate-pulse shrink-0" />
+                  <div>
+                    <span className="font-extrabold uppercase tracking-wide block text-xs">Vehículo Vendido</span>
+                    <span className="text-xs font-medium text-slate-600">Esta unidad ya fue comercializada. ¡Consultanos por modelos similares disponibles!</span>
+                  </div>
+                </div>
+              )}
+
+              {vehicle.status === 'Reserved' && (
+                <div className="bg-amber-50 border border-amber-200 text-amber-900 px-4 py-3 rounded-xl font-bold text-xs flex items-center gap-2.5">
+                  <Clock className="w-4 h-4 text-amber-600 shrink-0" />
+                  <div>
+                    <span className="font-extrabold uppercase tracking-wide block text-xs text-amber-800">Vehículo Reservado</span>
+                    <span className="text-xs font-medium text-slate-600">Esta unidad se encuentra señada en proceso de entrega.</span>
+                  </div>
+                </div>
+              )}
               <div>
                 <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Precio al Contado</span>
                 <div className="flex items-baseline gap-2 mt-0.5">
@@ -502,9 +533,19 @@ export default function ShowroomView({
                           US$ {v.price.toLocaleString()}
                         </span>
                       </div>
-                      <span className="text-[11px] text-emerald-600 font-bold">
-                        Financiable
-                      </span>
+                      {v.status === 'Sold' ? (
+                        <span className="text-[11px] text-red-600 font-bold bg-red-50 px-2 py-0.5 rounded border border-red-200">
+                          Vendido
+                        </span>
+                      ) : v.status === 'Reserved' ? (
+                        <span className="text-[11px] text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                          Reservado
+                        </span>
+                      ) : (
+                        <span className="text-[11px] text-emerald-600 font-bold">
+                          Financiable
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
